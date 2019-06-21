@@ -2,38 +2,71 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+/**
+ * @property int $id
+ * @property string $avatar
+ * @property string $email
+ * @property string $password
+ * @property int $category_id
+ * @property string $remember_token
+ * @property Carbon $email_verified_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Category $category
+ * @property Role $roles
+ * @property Token $tokens
+ * @property Creator $creator
+ * @property Creator $created
+ * @property Real $real
+ */
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name', 'email', 'password',
+        'avatar', 'email', 'password', 'category_id'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function tokens()
+    {
+        return $this->hasMany(Token::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(Creator::class,'creator_id');
+    }
+
+    public function created()
+    {
+        return $this->belongsTo(Creator::class,'created_id');
+    }
+
+    public function real()
+    {
+        return $this->hasOne(Real::class);
+    }
 }
