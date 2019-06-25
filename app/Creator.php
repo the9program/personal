@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property User $creator
- * @property User $created
+ * @property User $created_by
  */
 class Creator extends Model
 {
@@ -23,7 +23,7 @@ class Creator extends Model
         return $this->belongsTo(User::class,'creator_id');
     }
 
-    public function created()
+    public function created_by()
     {
         return $this->belongsTo(User::class,'created_id');
     }

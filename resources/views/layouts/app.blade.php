@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Program Created BY LY -->
 
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html {!! (session('locale') == 'ar') ? "dir='rtl'" : '' !!}  lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
 
     <!-- Meta Tags -->
@@ -96,5 +96,6 @@
     @include('layouts.footer')
 </div>
 <script src="{{ asset('js/custom.js') }}"></script>
+<script src="{{ asset('js/template_localize.js') }}"></script>
 </body>
 </html>

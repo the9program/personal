@@ -10,7 +10,12 @@
             <div class="widget no-border">
                 <nav>
                     <ul class="nav nav-list">
-                        <li><a href="/">Home</a></li>
+                        @if(auth()->check())
+                            <li><a href="{{ route('security') }}">{{ __('personal/security.security') }}</a></li>
+                            <li><a href="{{ route('params') }}">{{ __('personal/real.real') }}</a></li>
+                            <li><a href="{{ route('address.index') }}">address</a></li>
+                            <li><a href="{{ route('mobile.index') }}">phone</a></li>
+                        @endif
                     </ul>
                 </nav>
             </div>

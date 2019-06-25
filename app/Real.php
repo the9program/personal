@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $cin
  * @property string $last_name
  * @property string $first_name
- * @property boolean $sexe
+ * @property boolean $gender
  * @property Carbon $birth
  * @property int $user_id
  * @property Carbon $created_at
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Real extends Model
 {
-    protected $fillable = ['cin', 'last_name', 'first_name', 'sexe', 'birth', 'user_id'];
+    protected $fillable = ['cin', 'last_name', 'first_name', 'gender', 'birth', 'user_id'];
 
     public function user()
     {

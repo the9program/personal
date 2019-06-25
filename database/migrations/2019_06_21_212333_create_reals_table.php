@@ -20,7 +20,7 @@ class CreateRealsTable extends Migration
 
             $table->string('last_name')->nullable();
             $table->string('first_name')->nullable();
-            $table->boolean('sexe')
+            $table->boolean('gender')
                 ->nullable()
                 ->comment('false for women and true for man');
             $table->date('birth')->nullable();

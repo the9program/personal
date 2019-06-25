@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Notifications\Personal\ResetPasswordNotification;
+use App\Notifications\Personal\VerifyEmail;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -21,9 +23,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property Role $roles
  * @property Token $tokens
  * @property Creator $creator
- * @property Creator $created
+ * @property Creator $created_by
  * @property Real $real
  */
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
@@ -60,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Creator::class,'creator_id');
     }
 
-    public function created()
+    public function created_by()
     {
         return $this->belongsTo(Creator::class,'created_id');
     }
@@ -69,4 +72,17 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Real::class);
     }
+
+    // operations
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmail);
+    }
+
 }

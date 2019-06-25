@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
 
-            $table->unsignedBigInteger('category_id')->index();
+            $table->unsignedBigInteger('category_id')->index()->nullable();
             $table->foreign('category_id')->references('id')->on('categories');
 
             $table->rememberToken();

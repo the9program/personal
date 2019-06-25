@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\Personal\Real\RegisterRequest;
+use App\Phone;
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -41,18 +44,13 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Show the application registration form.
      *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return \Illuminate\Http\Response
      */
-    protected function validator(array $data)
+    public function showRegistrationForm()
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        return view('auth.login');
     }
 
     /**
@@ -63,10 +61,44 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
+
+        $user =  User::create([
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        $real = $user->real()->create([
+            'last_name'     => $data['last_name'],
+            'first_name'    => $data['first_name'],
+            'gender'        => $data['gender'],
+            'birth'         => $data['birth'],
+        ]);
+
+
+        $mobile = Phone::create([
+            'phone'     => $data['mobile']
+        ]);
+
+        $mobile->reals()->attach($real->id,['default' => true]);
+
+        return $user;
+
     }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param RegisterRequest|\Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(RegisterRequest $request)
+    {
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
+    }
+
 }

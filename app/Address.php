@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
+ * @property boolean $default
  * @property string $address
  * @property int $build
  * @property int $floor
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Address extends Model
 {
-    protected $fillable = ['address', 'build', 'floor', 'apt_nbr', 'zip', 'city_id'];
+    protected $fillable = ['default', 'address', 'build', 'floor', 'apt_nbr', 'zip', 'city_id'];
 
     protected $table = 'addresses';
 

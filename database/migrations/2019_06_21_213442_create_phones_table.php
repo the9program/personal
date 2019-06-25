@@ -16,7 +16,7 @@ class CreatePhonesTable extends Migration
         Schema::create('phones', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('phone')->unique();
+            $table->string('phone');
 
             $table->timestamps();
         });
@@ -26,7 +26,7 @@ class CreatePhonesTable extends Migration
 
             $table->string('phone_id');
             $table->string('real_id');
-            $table->boolean('default');
+            $table->boolean('default')->default(true);
 
         });
     }
