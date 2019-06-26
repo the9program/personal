@@ -183,6 +183,10 @@ return [
         'avatar'                => "Avatar",
         'cin'                   => "CIN",
         'update'                => "Mettre à jour",
-        'send'                  => "Envoyer"
+        'create'                => "Créé",
+        'edit'                  => "Modifié",
+        'delete'                => "Supprimé",
+        'send'                  => "Envoyer",
+        'token'                 => "jeton"
     ],
 ];

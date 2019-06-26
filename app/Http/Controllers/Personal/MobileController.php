@@ -8,34 +8,60 @@ use App\Http\Controllers\Controller;
 
 class MobileController extends Controller
 {
+
     public function index()
     {
 
-        return view('real.mobile',[
-            'mobiles' => auth()->user()->real->phones
+        return view('real.mobile.index', [
+            'mobiles' => auth()->user()
+                ->real->phones()
+                ->with(['reals'])->get()
         ]);
 
-    }
-
-    public function show(Phone $phone)
-    {
-        dd($phone);
     }
 
     public function create()
     {
 
+        return view('real.mobile.create');
+
     }
 
     public function store(MobileRequest $request)
     {
+
         $mobile = Phone::create(['phone' => $request->mobile]);
 
-        $mobile->attach(auth()->user()->real->id,['default' => true]);
+        if($request->default) {
 
-        session()->flash('success', 'Votre numero mobile a bien été ajouté');
+            foreach (auth()->user()->real->phones as $phone) {
 
-        return back();
+                auth()->user()->real->phones()->updateExistingPivot($phone->id, ['default' => false]);
+
+            }
+
+            $mobile->reals()->attach(auth()->user()->real->id,['default' => true]);
+
+            session()->flash('success', __('personal/mobile.created_default'));
+
+        }
+
+        else {
+
+            $mobile->reals()->attach(auth()->user()->real->id,['default' => false]);
+
+            session()->flash('success', __('personal/mobile.created'));
+
+        }
+
+        return redirect()->route('phone.index');
+    }
+
+    public function edit(Phone $phone)
+    {
+
+        return view('real.mobile.edit',compact('phone'));
+
     }
 
     public function update(MobileRequest $request,Phone $phone)
@@ -43,44 +69,49 @@ class MobileController extends Controller
 
         $phone->update(['phone' => $request->mobile]);
 
-        session()->flash('success', 'Votre numero mobile a bien mis à jour');
+        if($request->default) {
 
-        return back();
+            foreach (auth()->user()->real->phones as $mobile) {
+
+                auth()->user()->real->phones()->updateExistingPivot($mobile->id, ['default' => false]);
+
+            }
+
+            auth()->user()->real->phones()->updateExistingPivot($phone->id, ['default' => true]);
+
+            session()->flash('success', __('personal/mobile.updated_default'));
+
+
+        }
+        else {
+
+            session()->flash('success', __('personal/mobile.updated'));
+
+        }
+
+        return redirect()->route('phone.index');
 
     }
 
     public function destroy(Phone $phone)
     {
 
-        $phones = auth()->user()->real->phones;
+        if ($phone->reals[0]->pivot->default) {
 
-        foreach ($phones as $phone) {
+            session()->flash('danger', __('personal/mobile.not_deleted'));
 
-            auth()->user()->real->phones()->updateExistingPivot($phone->id, ['default' => false]);
+        }
+        else {
+
+            auth()->user()->real->phones()->detach($phone->id);
+
+            $phone->delete();
+
+            session()->flash('success', __('personal/mobile.deleted'));
 
         }
 
-        auth()->user()->real->detach($phone->id);
+        return redirect()->route('phone.index');
 
-        $phone->delete();
-
-        return back();
-
-    }
-
-    public function primary(Phone $phone)
-    {
-
-        $phones = auth()->user()->real->phones;
-
-        foreach ($phones as $phone) {
-
-            auth()->user()->real->phones()->updateExistingPivot($phone->id, ['default' => false]);
-
-        }
-
-        auth()->user()->real->phones()->updateExistingPivot($phone->id, ['default' => true]);
-
-        return back();
     }
 }

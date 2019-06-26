@@ -13,8 +13,9 @@
                         @if(auth()->check())
                             <li><a href="{{ route('security') }}">{{ __('personal/security.security') }}</a></li>
                             <li><a href="{{ route('params') }}">{{ __('personal/real.real') }}</a></li>
-                            <li><a href="{{ route('address.index') }}">address</a></li>
-                            <li><a href="{{ route('mobile.index') }}">phone</a></li>
+                            <li><a href="{{ route('address.index') }}">{{ __('personal/address.address') }}</a></li>
+                            <li><a href="{{ route('phone.index') }}">{{ __('validation.attributes.mobile') }}</a></li>
+                            <li><a href="{{ route('token.index') }}">{{ __('personal/token.tokens') }}</a></li>
                         @endif
                     </ul>
                 </nav>

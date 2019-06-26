@@ -4,7 +4,10 @@ namespace App\Repository\Personal;
 
 
 use App\Http\Requests\Personal\Real\ParamsRequest;
+use App\Phone;
+use App\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserRepository
@@ -40,5 +43,30 @@ class UserRepository
             'avatar' => $avatar->store('avatar')
 
         ]);
+    }
+
+    public function create(array  $data,$moderator = null)
+    {
+        $user =  User::create([
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'category' => (is_null($moderator)) ? null : 2
+        ]);
+
+        $real = $user->real()->create([
+            'last_name'     => $data['last_name'],
+            'first_name'    => $data['first_name'],
+            'gender'        => $data['gender'],
+            'birth'         => $data['birth'],
+        ]);
+
+
+        $mobile = Phone::create([
+            'phone'     => $data['mobile']
+        ]);
+
+        $mobile->reals()->attach($real->id,['default' => true]);
+
+        return $user;
     }
 }

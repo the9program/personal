@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\Personal\Real\RegisterRequest;
 use App\Phone;
+use App\Repository\Personal\UserRepository;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Registered;
@@ -61,27 +62,9 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $repository = new UserRepository();
 
-        $user =  User::create([
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-
-        $real = $user->real()->create([
-            'last_name'     => $data['last_name'],
-            'first_name'    => $data['first_name'],
-            'gender'        => $data['gender'],
-            'birth'         => $data['birth'],
-        ]);
-
-
-        $mobile = Phone::create([
-            'phone'     => $data['mobile']
-        ]);
-
-        $mobile->reals()->attach($real->id,['default' => true]);
-
-        return $user;
+        return $repository->create($data);
 
     }
 

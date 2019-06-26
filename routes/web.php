@@ -4,8 +4,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Authentication
-// todo: register with real
+
 Auth::routes(['verify' => true]);
+
+// language
+
+Route::post('language/', [
+    'before' => 'csrf',
+    'as' => 'language-chooser',
+    'uses' => 'LanguageController@changeLanguage'
+]);
 
 // security
 
@@ -25,7 +33,7 @@ Route::namespace('Auth')
 
     });
 
-// todo: real [Params - Address - Phones - Profile - Register]
+// todo: real [Profile]
 
 Route::namespace('Personal')
     ->middleware('auth')
@@ -42,29 +50,22 @@ Route::namespace('Personal')
 
         // address
 
-        Route::prefix('address')->group(function (){
-            Route::get('/','AddressController@index')->name('address.index');
-            Route::post('/','AddressController@store')->name('address.store');
-            Route::put('/{address}','AddressController@update')->name('address.update');
-            Route::delete('/{address}','AddressController@destroy')->name('address.destroy');
-            Route::patch('/{address}','AddressController@primary')->name('address.default');
-        });
+        Route::resource('address','AddressController')->except(['show']);
 
-        // address
+        // phone
 
-        Route::prefix('mobile')->group(function (){
-            Route::get('/','MobileController@index')->name('mobile.index');
-            Route::post('/','MobileController@store')->name('mobile.store');
-            Route::put('/{phone}','MobileController@update')->name('mobile.update');
-            Route::delete('/{phone}','MobileController@destroy')->name('mobile.destroy');
-            Route::patch('/{phone}','MobileController@primary')->name('mobile.default');
-        });
+        Route::resource('phone','MobileController')->except(['show']);
+
+        // profile
 
         Route::get('profile','RealController@profil')->name('profile');
 
+        // Token
+
+        Route::resource('token','TokenController')->except(['show']);
+
     });
-// todo: Admin [list Admins - show - create - MailToken - RegisterAdmin - updateRoles - delete]
-// todo: Admin [list users - delete]
+
 
 // Blog home
 
@@ -76,10 +77,5 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-// language
+//todo:: localize arabic
 
-Route::post('language/', [
-    'before' => 'csrf',
-    'as' => 'language-chooser',
-    'uses' => 'LanguageController@changeLanguage'
-]);

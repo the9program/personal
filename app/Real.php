@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * @property User $user
  * @property Phone $phones
+ * @property Address $addresses
  */
 class Real extends Model
 {
@@ -30,5 +31,10 @@ class Real extends Model
     public function phones()
     {
         return $this->belongsToMany(Phone::class)->withPivot('default');
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
     }
 }
