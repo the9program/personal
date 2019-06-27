@@ -14,47 +14,67 @@ use Illuminate\Support\Facades\Auth;
 class TokenController extends Controller
 {
 
-    public function index()
+    public function index(Token $token)
     {
 
-        return view('real.token.index', [
-            'tokens' => Token::all()
-        ]);
+        if (auth()->user()->can('token', $token)) {
+
+            return view('real.token.index', [
+                'tokens' => Token::all()
+            ]);
+
+        }
+
+        return abort(404);
 
     }
 
-    public function create()
+    public function create(Token $token)
     {
-        return view('real.token.create');
+
+        if (auth()->user()->can('token', $token)) {
+
+            return view('real.token.create');
+
+        }
+
+        return abort(404);
     }
 
     public function store(EmailRequest $request, TokenRepository $repository)
     {
-        if ($request->email == auth()->user()->email) {
 
-            return back()->withErrors(['email' => __('personal/token.self_error')])->withInput();
+        if (auth()->user()->can('token', $token)) {
+
+            if ($request->email == auth()->user()->email) {
+
+                return back()->withErrors(['email' => __('personal/token.self_error')])->withInput();
+
+            }
+
+            $token = $repository->create($request->email);
+
+            $token->notify(new TokenNotification($token));
+
+            session()->flash('success', __('personal/token.created'));
+
+            return redirect()->route('token.index');
 
         }
 
-        $token = $repository->create($request->email);
-
-        $token->notify(new TokenNotification($token));
-
-        session()->flash('success', __('personal/token.created'));
-
-        return redirect()->route('token.index');
+        return abort(403);
 
     }
 
     public function edit(Token $token)
     {
-        return view('real.token.edit',compact('token'));
+        return view('real.token.edit', compact('token'));
     }
 
-    public function update(TokenRequest $request, Token $token,UserRepository $repository)
+    public function update(TokenRequest $request, Token $token, UserRepository $repository)
     {
 
-        $user = $repository->create($request->all(),true);
+        $user = $repository->create($request->all(), true);
 
         Auth::guard()->login($user);
 
@@ -66,11 +86,17 @@ class TokenController extends Controller
     public function destroy(Token $token)
     {
 
-        $token->delete();
+        if (auth()->user()->can('token',$token)) {
 
-        session()->flash('success',__('personal/token.deleted'));
+            $token->delete();
 
-        return redirect()->route('token.index');
+            session()->flash('success', __('personal/token.deleted'));
+
+            return redirect()->route('token.index');
+
+        }
+
+        return abort(403);
 
     }
 

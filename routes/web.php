@@ -58,7 +58,7 @@ Route::namespace('Personal')
 
         // profile
 
-        Route::get('profile','RealController@profil')->name('profile');
+        Route::get('profile','RealController@profile')->name('profile');
 
         // Token
 
